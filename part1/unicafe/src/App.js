@@ -2,19 +2,26 @@ import {useState} from 'react';
 
 const Heading = ({text}) => <h1>{text}</h1>
 const Button = ({text, handleClick}) => <button onClick={handleClick}>{text}</button>
-const StatisticLine = ({text, value}) => <p>{text} {value}</p>
+const StatisticLine = ({text, value}) => (
+  <tbody>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  </tbody>
+)
 const Statistics = (props) => {
   if (props.good === 0 && props.neutral === 0 && props.bad === 0) {
     return <p>No feedback given</p>
   }
-  return (<>
+  return (<table>
     <StatisticLine text="good" value={props.good} />
     <StatisticLine text="neutral" value={props.neutral} />
     <StatisticLine text="bad" value={props.bad} />
     <StatisticLine text="all" value={props.all} />
     <StatisticLine text="average" value={props.average} />
     <StatisticLine text="positive" value={props.positive + " %"} />
-  </>)
+  </table>)
 }
 
 const App = () => {
