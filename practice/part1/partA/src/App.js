@@ -1,23 +1,51 @@
-const Hello = (param) => (
-  <div>
-    <p>Is this being shown? Given parameter is: {param.age} </p>
-  </div>
+import { useState } from 'react';
+
+const History = (props) => {
+  if (props.allClicks.length === 0) {
+    return (
+      <div>
+        the app is used by pressing the buttons
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      button press history: {props.allClicks.join(' ')}
+    </div>
+  )
+}
+
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>
+    {text}
+  </button>
 )
 
 const App = () => {
-  console.log("This is a console message!");
-  const now = new Date();
-  const a = 3;
-  const b = 4;
-  return (<div>
-    <p>Hello world</p>
-    <p>The time right now is {now.toString()}!</p>
-    <p>{a} + {b} = {a + b}</p>
-    <Hello age={3} />
-    <Hello age={4 + 5}/>
-    <Hello age={"4 + 5"} />
-    <Hello age={4} />
-  </div>)
-};
+  const [left, setLeft] = useState(0)
+  const [right, setRight] = useState(0)
+  const [allClicks, setAll] = useState([])
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    setLeft(left + 1)
+  }
+
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'))
+    setRight(right + 1)
+  }
+
+  return (
+    <div>
+      {left}
+      <Button handleClick={handleLeftClick} text='left' />
+      <Button handleClick={handleRightClick} text='right' />
+      {right}
+      <History allClicks={allClicks} />
+    </div>
+  )
+}
 
 export default App;
