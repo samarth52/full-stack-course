@@ -2,10 +2,10 @@ import { useState } from 'react'
 
 const Form = ({notes, setNotes}) => {
   const [name, setName] = useState('enter a name')
-  const [phone, setPhone] = useState('enter a phone')
+  const [number, setNumber] = useState('enter a number')
 
   const handleChangeName = (event) => setName(event.target.value) 
-  const handleChangePhone = (event) => setPhone(event.target.value)
+  const handleChangeNumber = (event) => setNumber(event.target.value)
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -18,16 +18,16 @@ const Form = ({notes, setNotes}) => {
       }
     })
     if (!found) {
-      setNotes(notes.concat({name: name, phone: phone}))
+      setNotes(notes.concat({name: name, number: number}))
       setName('')
-      setPhone('')
+      setNumber('')
     }
   }
 
   return (
     <form onSubmit={handleSubmit}>
       name: <input value={name} onChange={handleChangeName} /><br/>
-      number: <input value={phone} onChange={handleChangePhone} /><br/>
+      number: <input value={number} onChange={handleChangeNumber} /><br/>
       <button type="submit">add</button>
     </form>
   )

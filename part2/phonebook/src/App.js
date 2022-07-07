@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { useEffect } from 'react'
+import axios from 'axios'
+
 import Form from './components/Form'
 import Display from './components/Display'
 import Filter from './components/Filter'
@@ -8,6 +11,15 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   const notesToShow = notes.filter(note => note.name.search(new RegExp(filter)) !== -1)
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setNotes(response.data)
+      })
+  }, [])
+  console.log(`loaded ${notes.length} people`)
 
   return (
     <>
