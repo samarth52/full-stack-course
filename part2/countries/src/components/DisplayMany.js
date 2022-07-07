@@ -17,7 +17,7 @@ const DisplayMany = ({ countries }) => {
     {countries.map((country, index) => {
       return (
         <div key={country.name.official}>
-          {country.name.common} <button onClick={handleClick(index)}>{display[index] ? 'hide' : 'show'}</button>
+          {country.name.official} <button onClick={handleClick(index)}>{display[index] ? 'hide' : 'show'}</button>
           {countryDetails(index, country)}
         </div>
       )

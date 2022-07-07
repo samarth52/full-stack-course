@@ -19,7 +19,7 @@ const App = () => {
   }, [])
 
   const reg = new RegExp(filter, 'i')
-  const toShow = countries.filter(country => country.name.common.search(reg) !== -1)
+  const toShow = countries.filter(country => country.name.official.search(reg) !== -1)
 
   return (
     <>

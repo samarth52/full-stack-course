@@ -1,7 +1,7 @@
 import Weather from './Weather'
 
 const DisplayOne = ({ country, isSingle }) => {
-  console.log(`displaying details of ${country.name.common}`)
+  console.log(`displaying details of ${country.name.official}`)
 
   const displayWeather = () => {
     if (isSingle) {
@@ -13,7 +13,7 @@ const DisplayOne = ({ country, isSingle }) => {
 
   return (
     <div>
-      <h1>{country.name.common}</h1>
+      <h1>{country.name.official}</h1>
       capital {country.capital[0]} <br />
       area {country.area}
       <h3>languages:</h3>
