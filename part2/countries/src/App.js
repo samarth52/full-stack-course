@@ -14,14 +14,12 @@ const App = () => {
       .get('https://restcountries.com/v3.1/all/')
       .then(response => {
         setCountries(response.data)
+        console.log(`${response.data.length} countries loaded`)
       })
   }, [])
-  console.log(`${countries.length} countries loaded`)
 
-  console.log(countries)
   const reg = new RegExp(filter, 'i')
   const toShow = countries.filter(country => country.name.common.search(reg) !== -1)
-  console.log('toShow', toShow)
 
   return (
     <>
