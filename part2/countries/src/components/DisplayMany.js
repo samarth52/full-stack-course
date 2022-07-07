@@ -11,14 +11,14 @@ const DisplayMany = ({ countries }) => {
     return () => setDisplay(newDisplay)
   }
 
-  const trial = (index, country) => display[index] ? <DisplayOne country={country}/> : <></>
+  const countryDetails = (index, country) => display[index] ? <DisplayOne country={country} isSingle={false} /> : <></>
 
   return <div>
     {countries.map((country, index) => {
       return (
         <div key={country.name.official}>
           {country.name.common} <button onClick={handleClick(index)}>{display[index] ? 'hide' : 'show'}</button>
-          {trial(index, country)}
+          {countryDetails(index, country)}
         </div>
       )
     })}

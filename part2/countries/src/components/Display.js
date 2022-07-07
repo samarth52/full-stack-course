@@ -6,7 +6,7 @@ const Display = ({ toShow }) => {
   if (toShow.length === 0) {
     return <div>No matches</div>
   } else if (toShow.length === 1) {
-    return <DisplayOne country={toShow[0]}/>
+    return <DisplayOne country={toShow[0]} isSingle={true} />
   } else if (toShow.length <= 10) {
     return <DisplayMany countries={toShow} />
   } else {
