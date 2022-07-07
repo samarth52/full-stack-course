@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 import Form from './components/Form'
@@ -10,7 +9,8 @@ const App = () => {
   const [notes, setNotes] = useState([])
   const [filter, setFilter] = useState('')
 
-  const notesToShow = notes.filter(note => note.name.search(new RegExp(filter)) !== -1)
+  const reg = new RegExp(filter)
+  const notesToShow = notes.filter(note => note.name.search(reg) !== -1)
   useEffect(() => {
     axios
       .get('http://localhost:3001/persons')
