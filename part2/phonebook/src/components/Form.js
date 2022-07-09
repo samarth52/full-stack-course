@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import phoneService from '../services/phonebook'
 
 const Form = ({notes, setNotes}) => {
   const [name, setName] = useState('enter a name')
@@ -12,15 +13,26 @@ const Form = ({notes, setNotes}) => {
     let found = false;
     notes.forEach(note => {
       if (name === note.name) {
-        alert(`${name} is already added to phonebook`)
+        if (window.confirm(`${note.name} is already added to phonebook, replace the old number with a new one?`)) {
+          const updatedNote = {...note, number}
+          setNotes(notes.map(currNote => currNote !== note ? currNote : updatedNote))
+          phoneService.update(updatedNote)
+          console.log(`updated id ${note.id} to`, updatedNote)
+          setName('')
+          setNumber('')
+        }
         found = true;
         return;
       }
     })
     if (!found) {
-      setNotes(notes.concat({name: name, number: number}))
+      const newObj = {name, number, id: notes[notes.length - 1].id + 1}
+      setNotes(notes.concat(newObj))
       setName('')
       setNumber('')
+      phoneService
+        .create(newObj)
+        .then(returnedRecord => console.log('added', returnedRecord))
     }
   }
 

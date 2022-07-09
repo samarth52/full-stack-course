@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import phoneService from './services/phonebook'
 
 import Form from './components/Form'
 import Display from './components/Display'
@@ -12,14 +12,13 @@ const App = () => {
   const reg = new RegExp(filter)
   const notesToShow = notes.filter(note => note.name.search(reg) !== -1)
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
+    phoneService
+      .getAll()
+      .then(initalRecords => {
+        setNotes(initalRecords)
+        console.log(`rendered ${initalRecords.length} records`)
       })
   }, [])
-  console.log(`loaded ${notes.length} people`)
 
   return (
     <>
@@ -28,7 +27,7 @@ const App = () => {
       <h1>add a name</h1>
       <Form notes={notes} setNotes={setNotes}/>
       <h1>Numbers</h1>
-      <Display notesToShow={notesToShow} />
+      <Display notesToShow={notesToShow} notes={notes} setNotes={setNotes} />
     </>
   )
 }
