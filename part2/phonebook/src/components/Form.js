@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import phoneService from '../services/phonebook'
 
-const Form = ({notes, setNotes}) => {
-  const [name, setName] = useState('enter a name')
-  const [number, setNumber] = useState('enter a number')
+const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
+  const [name, setName] = useState('')
+  const [number, setNumber] = useState('')
 
-  const handleChangeName = (event) => setName(event.target.value) 
+  const handleChangeName = (event) => setName(event.target.value)
   const handleChangeNumber = (event) => setNumber(event.target.value)
 
   const handleSubmit = (event) => {
@@ -14,7 +14,7 @@ const Form = ({notes, setNotes}) => {
     notes.forEach(note => {
       if (name === note.name) {
         if (window.confirm(`${note.name} is already added to phonebook, replace the old number with a new one?`)) {
-          const updatedNote = {...note, number}
+          const updatedNote = { ...note, number }
           setNotes(notes.map(currNote => currNote !== note ? currNote : updatedNote))
           phoneService.update(updatedNote)
           console.log(`updated id ${note.id} to`, updatedNote)
@@ -26,7 +26,7 @@ const Form = ({notes, setNotes}) => {
       }
     })
     if (!found) {
-      const newObj = {name, number, id: notes[notes.length - 1].id + 1}
+      const newObj = { name, number, id: notes[notes.length - 1].id + 1 }
       setNotes(notes.concat(newObj))
       setName('')
       setNumber('')
@@ -34,12 +34,13 @@ const Form = ({notes, setNotes}) => {
         .create(newObj)
         .then(returnedRecord => console.log('added', returnedRecord))
     }
+    setMessageStatusHelper(`Added ${name}`, false)
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      name: <input value={name} onChange={handleChangeName} /><br/>
-      number: <input value={number} onChange={handleChangeNumber} /><br/>
+      name: <input value={name} placeholder='enter a name' onChange={handleChangeName} /><br />
+      number: <input value={number} placeholder='enter a number' onChange={handleChangeNumber} /><br />
       <button type="submit">add</button>
     </form>
   )
