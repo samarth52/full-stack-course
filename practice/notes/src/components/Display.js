@@ -1,7 +1,7 @@
 import noteService from '../services/notes'
 import Note from './Note'
 
-const Display = ({ notes, showAll, setNotes }) => {
+const Display = ({ notes, showAll, setNotes, setErrorMessage }) => {
   const notesToShow = showAll ? notes : notes.filter(note => note.important === true)
 
   const toggleImportanceOf = (id, note) => {
@@ -13,9 +13,13 @@ const Display = ({ notes, showAll, setNotes }) => {
         console.log(returnedNote, `updated to importance level: ${!note.important}`)
       })
       .catch(error => {
-        alert(
-          `the note '${note.content}' was already deleted from server`
+        console.log(error)
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
         )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
         noteService
           .getAll()
           .then(storedNotes => setNotes(storedNotes))
