@@ -1,13 +1,16 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = 'http://localhost:3001/api/persons'
 
 const getAll = async () => {
   return axios.get(baseUrl).then(response => response.data)
 }
 
 const create = async (newObject) => {
-  return axios.post(baseUrl, newObject).then(response => response.data)
+  return axios.post(baseUrl, newObject).then(response => {
+    console.log('response', response)
+    return response.data
+  })
 }
 
 const update = async (newObject) => {

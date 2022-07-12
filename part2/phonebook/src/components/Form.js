@@ -15,11 +15,14 @@ const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
       if (name === note.name) {
         if (window.confirm(`${note.name} is already added to phonebook, replace the old number with a new one?`)) {
           const updatedNote = { ...note, number }
-          setNotes(notes.map(currNote => currNote !== note ? currNote : updatedNote))
-          phoneService.update(updatedNote)
-          console.log(`updated id ${note.id} to`, updatedNote)
-          setName('')
-          setNumber('')
+          phoneService
+            .update(updatedNote)
+            .then(() => {
+              setNotes(notes.map(currNote => currNote !== note ? currNote : updatedNote))
+              console.log(`updated id ${note.id} to`, updatedNote)
+              setName('')
+              setNumber('')
+            })
         }
         found = true;
         return;
@@ -27,14 +30,19 @@ const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
     })
     if (!found) {
       const newObj = { name, number, id: notes[notes.length - 1].id + 1 }
-      setNotes(notes.concat(newObj))
-      setName('')
-      setNumber('')
       phoneService
         .create(newObj)
-        .then(returnedRecord => console.log('added', returnedRecord))
+        .then(returnedRecord => {
+          console.log('added', returnedRecord)
+          setNotes(notes.concat(newObj))
+          setName('')
+          setNumber('')
+          setMessageStatusHelper(`Added ${name}`, false)
+        })
+        .catch(() =>{
+          setMessageStatusHelper(`Error adding ${name}`, true)
+        }) 
     }
-    setMessageStatusHelper(`Added ${name}`, false)
   }
 
   return (

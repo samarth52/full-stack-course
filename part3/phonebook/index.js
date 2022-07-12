@@ -1,17 +1,18 @@
 const express = require("express")
-const { compile } = require("morgan")
 const morgan = require("morgan")
+const cors = require("cors")
 const app = express()
+
+app.use(cors())
+app.use(express.json())
 
 morgan.format('custom', (tokens, request, response) => {
   if (request.method === 'POST') {
-    return compile(`:method :url :status :res[content-length] - :response-time ms ${JSON.stringify(request.body)}`)(tokens, request, response)
+    return morgan.compile(`:method :url :status :res[content-length] - :response-time ms ${JSON.stringify(request.body)}`)(tokens, request, response)
   } else {
-    return compile(':method :url :status :res[content-length] - :response-time ms')(tokens, request, response)
+    return morgan.compile(':method :url :status :res[content-length] - :response-time ms')(tokens, request, response)
   }
 })
-
-app.use(express.json())
 app.use(morgan('custom'))
 
 let phonebook = [
@@ -83,7 +84,7 @@ app.post('/api/persons', (request, response) => {
   } else if (phonebook.find(phone => phone.name === body.name)) {
     return response.status(400).json({ error: 'name must be unique' })
   }
-
+  console.log('hi')
   const newPhone = {
     id: Math.floor(Math.random() * 100000),
     name: body.name,
