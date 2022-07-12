@@ -1,6 +1,7 @@
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
+const { response } = require("express")
 const app = express()
 
 app.use(cors())
@@ -37,6 +38,10 @@ let phonebook = [
     "number": "39-23-6423122"
   }
 ]
+
+app.get('/', (request, response) => {
+  response.send(`<></>`)
+})
 
 app.get('/info', (request, response) => {
   response.send(
