@@ -30,44 +30,7 @@ app.get('/info', (request, response) => {
     })
 })
 
-app.get('/api/persons', (request, response) => {
-  Phone.find({})
-    .then(phones => {
-      console.log(`retrieved ${phones.length} records`)
-      response.json(phones)
-    })
-    .catch(err => {
-      response.statusMessage = `Error retrieving records: ${err}`
-      response.status(404).end()
-    })
-})
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  Phone.findById(id)
-    .then(phone => {
-      console.log(`retrieving record with id ${id}`)
-      response.json(phone)
-    })
-    .catch(err => {
-      console.log(`error retrieving record with id ${id} (not found)`)
-      response.status(404).end()
-    })
-})
-
-app.delete('/api/persons/:id', (request, response) => {
-  Phone.findByIdAndDelete(request.params.id)
-    .then(() => {
-      response.statusMessage - 'ID successfully deleted!'
-      response.status(204).end()
-    })
-    .catch(err => {
-      response.statusMessage = `error deleting record with id ${request.params.id} (not found)`
-      response.status(404).end()
-    })
-})
-
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   if (!body.name) {
     return response.status(400).json({ error: 'name is missing' })
@@ -91,7 +54,84 @@ app.post('/api/persons', (request, response) => {
           response.json(newPhone)
         })
     })
+    .catch(error => next(error))
 })
+
+app.get('/api/persons', (request, response, next) => {
+  Phone.find({})
+    .then(phones => {
+      console.log(`retrieved ${phones.length} records`)
+      response.json(phones)
+    })
+    .catch(error => {
+      console.log(`Error retrieving records`)
+      next(error)
+    })
+})
+
+app.get('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  Phone.findById(id)
+    .then(phone => {
+      console.log(`retrieving record with id ${id}`)
+      response.json(phone)
+    })
+    .catch(error => {
+      console.log(`error retrieving record with id ${id} (not found)`)
+      next(error)
+    })
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  const body = request.body
+  if (!body.number) {
+    response.status(400).json({ error: 'number is missing' })
+  }
+  Phone.findByIdAndUpdate(id, { number: body.number })
+    .then(result => {
+      console.log(`Phone number of record with id ${id} updated`)
+      response.json({ ...result, number: body.number })
+    })
+    .catch(error => {
+      next(error)
+    })
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Phone.findByIdAndDelete(request.params.id)
+    .then(result => {
+      if (result) {
+        response.statusMessage = 'ID successfully deleted!'
+        response.status(204).end()
+      } else {
+        console.log(`error deleting record with id ${request.params.id} (not found)`)
+        response.status(400).end()
+      }
+    })
+    .catch(error => {
+      console.log(error.message)
+      next(error)
+    })
+})
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if (error.name === 'CastError') {
+    response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
