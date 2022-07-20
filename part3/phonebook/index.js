@@ -1,8 +1,8 @@
-const express = require("express")
-const morgan = require("morgan")
-const cors = require("cors")
-require("dotenv").config()
-const Phone = require("./models/phoneMongo")
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
+require('dotenv').config()
+const Phone = require('./models/phoneMongo')
 
 const app = express()
 app.use(express.json())
@@ -32,7 +32,7 @@ app.get('/info', (request, response) => {
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
+
   Phone.find({ name: body.name })
     .then(phones => {
       if (phones.length !== 0) {
@@ -42,7 +42,7 @@ app.post('/api/persons', (request, response, next) => {
         name: body.name,
         number: body.number
       })
-    
+
       newPhone.save()
         .then(() => {
           console.log('Entered new record into the db')
@@ -60,7 +60,7 @@ app.get('/api/persons', (request, response, next) => {
       response.json(phones)
     })
     .catch(error => {
-      console.log(`Error retrieving records`)
+      console.log('Error retrieving records')
       next(error)
     })
 })
@@ -122,13 +122,14 @@ const errorHandler = (error, request, response, next) => {
     response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     response.status(400).json({ error: error.message })
-  } 
+  }
 
   next(error)
 }
 
 app.use(errorHandler)
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`running server on port ${PORT}`)

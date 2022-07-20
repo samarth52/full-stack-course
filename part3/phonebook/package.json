@@ -10,7 +10,8 @@
     "build:ui": "shx rm -rf build && cd ../../part2/phonebook && npm run build && shx cp -r build ../../part3/phonebook && shx rm -rf build",
     "deploy": "cd ../.. && git subtree --prefix part3/phonebook push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "author": "Samarth Chandna",
   "license": "MIT",
@@ -23,6 +24,7 @@
     "shx": "^0.3.4"
   },
   "devDependencies": {
+    "eslint": "^8.20.0",
     "nodemon": "^2.0.19"
   }
 }

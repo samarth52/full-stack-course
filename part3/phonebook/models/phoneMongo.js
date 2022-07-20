@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
+require('dotenv').config()
 
+// eslint-disable-next-line no-undef
 const url = process.env.MONGO_DB_URI
-console.log("Connected to MongoDB database")
+console.log('Connected to MongoDB database')
 mongoose.connect(url)
   .then(() => console.log('Connected!'))
   .catch(err => console.log(`Error connecting: ${err}`))
