@@ -7,8 +7,16 @@ mongoose.connect(url)
   .catch(err => console.log(`Error connecting: ${err}`))
 
 const phoneSchema = new mongoose.Schema({
-  name: String,
-  number: String
+  name: {
+    type: String,
+    minLength: 3,
+    required: [true, 'name is missing']
+  },
+  number: {
+    type: String,
+    validate: (value) => value.search(RegExp('^[0-9]{2,3}-[0-9]+$')) !== -1,
+    required: [true, 'number is missing']
+  }
 })
 
 phoneSchema.set('toJSON', {

@@ -27,6 +27,7 @@ const App = () => {
         setNotes(initalRecords)
         console.log(`rendered ${initalRecords.length} records`)
       })
+      .catch(error => console.log(error.response.data.error))
   }, [])
 
   return (

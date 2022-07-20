@@ -32,11 +32,6 @@ app.get('/info', (request, response) => {
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  if (!body.name) {
-    return response.status(400).json({ error: 'name is missing' })
-  } else if (!body.number) {
-    return response.status(400).json({ error: 'number is missing' })
-  } 
   
   Phone.find({ name: body.name })
     .then(phones => {
@@ -53,6 +48,7 @@ app.post('/api/persons', (request, response, next) => {
           console.log('Entered new record into the db')
           response.json(newPhone)
         })
+        .catch(error => next(error))
     })
     .catch(error => next(error))
 })
@@ -85,10 +81,8 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   const body = request.body
-  if (!body.number) {
-    response.status(400).json({ error: 'number is missing' })
-  }
-  Phone.findByIdAndUpdate(id, { number: body.number })
+
+  Phone.findByIdAndUpdate(id, { number: body.number }, { runValidators: true, context: 'query' })
     .then(result => {
       console.log(`Phone number of record with id ${id} updated`)
       response.json({ ...result, number: body.number })
@@ -126,7 +120,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     response.status(400).send({ error: 'malformatted id' })
-  }
+  } else if (error.name === 'ValidationError') {
+    response.status(400).json({ error: error.message })
+  } 
 
   next(error)
 }

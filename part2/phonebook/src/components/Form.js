@@ -23,6 +23,7 @@ const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
               setName('')
               setNumber('')
             })
+            .catch(error => console.log(error.response.data.error))
         }
         found = true;
         return;
@@ -39,7 +40,8 @@ const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
           setNumber('')
           setMessageStatusHelper(`Added ${name}`, false)
         })
-        .catch(() =>{
+        .catch(error =>{
+          console.log(error.response.data.error)
           setMessageStatusHelper(`Error adding ${name}`, true)
         }) 
     }
