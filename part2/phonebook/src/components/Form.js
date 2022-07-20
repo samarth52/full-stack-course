@@ -29,12 +29,12 @@ const Form = ({ notes, setNotes, setMessageStatusHelper }) => {
       }
     })
     if (!found) {
-      const newObj = { name, number, id: notes[notes.length - 1].id + 1 }
+      const newObj = { name, number }
       phoneService
         .create(newObj)
         .then(returnedRecord => {
           console.log('added', returnedRecord)
-          setNotes(notes.concat(newObj))
+          setNotes(notes.concat(returnedRecord))
           setName('')
           setNumber('')
           setMessageStatusHelper(`Added ${name}`, false)

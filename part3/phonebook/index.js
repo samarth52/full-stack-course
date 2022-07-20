@@ -1,11 +1,13 @@
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
-const app = express()
+require("dotenv").config()
+const Phone = require("./models/phoneMongo")
 
+const app = express()
+app.use(express.json())
 app.use(express.static('build'))
 app.use(cors())
-app.use(express.json())
 
 morgan.format('custom', (tokens, request, response) => {
   if (request.method === 'POST') {
@@ -16,64 +18,53 @@ morgan.format('custom', (tokens, request, response) => {
 })
 app.use(morgan('custom'))
 
-let phonebook = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-
 app.get('/info', (request, response) => {
-  response.send(
-    `<div>
-      <p>Phonebook has info for ${phonebook.length} people</p>
-      <p>${new Date()}</p>
-    </div>`
-)})
+  Phone.count()
+    .then(count => {
+      response.send(
+        `<div>
+          <p>Phonebook has info for ${count} people</p>
+          <p>${new Date()}</p>
+        </div>`
+      )
+    })
+})
 
 app.get('/api/persons', (request, response) => {
-  console.log(`retrieved ${phonebook.length} records`)
-  response.json(phonebook)
+  Phone.find({})
+    .then(phones => {
+      console.log(`retrieved ${phones.length} records`)
+      response.json(phones)
+    })
+    .catch(err => {
+      response.statusMessage = `Error retrieving records: ${err}`
+      response.status(404).end()
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const phone = phonebook.find(record => record.id === id)
-  if (phone) {
-    console.log(`retrieving record with id ${id}`)
-    response.json(phone)
-  } else {
-    console.log(`error retrieving record with id ${id} (not found)`)
-    response.status(404).end()
-  }
+  const id = request.params.id
+  Phone.findById(id)
+    .then(phone => {
+      console.log(`retrieving record with id ${id}`)
+      response.json(phone)
+    })
+    .catch(err => {
+      console.log(`error retrieving record with id ${id} (not found)`)
+      response.status(404).end()
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  if (phonebook.find(record => record.id === id)) {
-    console.log(`deleting record with id ${id}`)
-    phonebook = phonebook.filter(record => record.id !== id)
-    response.status(204).end()
-  } else {
-    console.log(`error deleting record with id ${id} (not found)`)
-    response.status(404).end()
-  }
+  Phone.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.statusMessage - 'ID successfully deleted!'
+      response.status(204).end()
+    })
+    .catch(err => {
+      response.statusMessage = `error deleting record with id ${request.params.id} (not found)`
+      response.status(404).end()
+    })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -82,21 +73,27 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'name is missing' })
   } else if (!body.number) {
     return response.status(400).json({ error: 'number is missing' })
-  } else if (phonebook.find(phone => phone.name === body.name)) {
-    return response.status(400).json({ error: 'name must be unique' })
-  }
-  console.log('hi')
-  const newPhone = {
-    id: Math.floor(Math.random() * 100000),
-    name: body.name,
-    number: body.number
-  }
-  console.log('entering record', newPhone)
-  phonebook = phonebook.concat(newPhone)
-  response.json(newPhone)
+  } 
+  
+  Phone.find({ name: body.name })
+    .then(phones => {
+      if (phones.length !== 0) {
+        return response.status(400).json({ error: 'name must be unique' })
+      }
+      const newPhone = new Phone({
+        name: body.name,
+        number: body.number
+      })
+    
+      newPhone.save()
+        .then(() => {
+          console.log('Entered new record into the db')
+          response.json(newPhone)
+        })
+    })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`running server on port ${PORT}`)
 })
