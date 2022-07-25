@@ -1,9 +1,15 @@
+const { IS_TEST } = require('./config')
+
 const info = (...params) => {
-  console.log(...params)
+  if (!IS_TEST) {
+    console.log(...params)
+  }
 }
 
 const error = (...params) => {
-  console.error(...params)
+  if (!IS_TEST) {
+    console.error(...params)
+  }
 }
 
 module.exports = {
