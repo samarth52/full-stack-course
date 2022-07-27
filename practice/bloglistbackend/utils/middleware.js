@@ -15,12 +15,14 @@ const unknownEndpoint = (request, response) => {
 }
 
 const errorHandler = (error, request, response, next) => {
-  logger.error(error.message)
+  logger.error(`${error.name}: ${error.message}`)
 
   if (error.name === 'CastError') {
     response.status(400).json({ error: 'malformatted error' })
   } else if (error.name === 'ValidationError') {
     response.status(400).json({ error: error.message })
+  } else if (error.message.indexOf('duplicate key error') !== -1) {
+    response.status(400).json({ error: 'username already exists' })
   }
 
   next(error)

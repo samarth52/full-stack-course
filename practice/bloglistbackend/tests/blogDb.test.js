@@ -2,9 +2,9 @@
 /* eslint-disable no-restricted-syntax */
 const supertest = require('supertest')
 const mongoose = require('mongoose')
-const app = require('../app')
 const Blog = require('../models/blog')
-const helper = require('./dbTestHelper')
+const helper = require('./blogDb.helper')
+const app = require('../app')
 
 const api = supertest(app)
 
@@ -41,22 +41,26 @@ test('create new blog post', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
-  expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+  const blogs = await helper.retrieveBlogs()
+  expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
 })
 
 test('checks likes defaults to 0 if missing', async () => {
-  const blog = new Blog({
+  const blog = {
     _id: '62e02858e1a3efcc820a891a',
     title: 'Test Blog',
     author: 'Samarth Chandna',
     url: 'http://testurl.com',
-  })
+  }
 
-  blog.save()
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
-  expect(response.body[helper.initialBlogs.length].likes).toBe(0)
+  const blogs = await helper.retrieveBlogs()
+  expect(blogs[helper.initialBlogs.length].likes).toBe(0)
 })
 
 test('checks validation error', async () => {
@@ -74,8 +78,8 @@ test('delete blog', async () => {
     .delete('/api/blogs/5a422a851b54a676234d17f7')
     .expect(204)
 
-  const response = await api.get('/api/blogs')
-  expect(response.body.length).toBe(helper.initialBlogs.length - 1)
+  const blogs = await helper.retrieveBlogs()
+  expect(blogs.length).toBe(helper.initialBlogs.length - 1)
 })
 
 test('delete blog', async () => {
@@ -90,8 +94,8 @@ test('update blog', async () => {
     .send({ likes: 45 })
     .expect(204)
 
-  const response = await api.get('/api/blogs')
-  expect(response.body[0].likes).toBe(45)
+  const blogs = await helper.retrieveBlogs()
+  expect(blogs[0].likes).toBe(45)
 })
 
 afterAll(() => {
