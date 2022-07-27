@@ -1,5 +1,10 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable object-curly-newline */
+const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const { SECRET } = require('../utils/config')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { id: 1, name: 1, username: 1 })
@@ -7,8 +12,27 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const result = await new Blog({ ...request.body, user: '62e11aa06bf6c1290d7326b9' }).save()
-  response.status(201).json(result)
+  const { title, author, url, like } = request.body
+
+  const decoded = jwt.verify(request.token, SECRET)
+  if (!decoded.id) {
+    return response.status(401).json({ error: 'invalid token passed' })
+  }
+
+  const user = await User.findById(decoded.id)
+  const blog = new Blog({
+    title,
+    author,
+    url,
+    like,
+    user: user._id,
+  })
+  const result = await blog.save()
+
+  user.blogs = user.blogs.concat(result._id)
+  await user.save()
+
+  return response.status(201).json(result)
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
