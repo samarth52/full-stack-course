@@ -1,5 +1,20 @@
 const Blog = require('../models/blog')
 
+const initialUsers = [
+  {
+    _id: '62e11aa06bf6c1290d7326b9',
+    username: 'root',
+    name: 'root',
+    password: 'alkshd1087aGJsh1bA',
+  },
+  {
+    _id: '62e159df67717d92ef256cc1',
+    username: 'sammy123',
+    name: 'Samarth Chandna',
+    password: 'thisismypassword@123',
+  },
+]
+
 const initialBlogs = [
   {
     _id: '5a422a851b54a676234d17f7',
@@ -7,6 +22,7 @@ const initialBlogs = [
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
   {
@@ -15,6 +31,7 @@ const initialBlogs = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
     likes: 5,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
   {
@@ -23,6 +40,7 @@ const initialBlogs = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
     likes: 12,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
   {
@@ -31,6 +49,7 @@ const initialBlogs = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
     likes: 10,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
   {
@@ -39,6 +58,7 @@ const initialBlogs = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
     likes: 0,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
   {
@@ -47,6 +67,7 @@ const initialBlogs = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
     likes: 2,
+    user: '62e11aa06bf6c1290d7326b9',
     __v: 0,
   },
 ]
@@ -57,5 +78,5 @@ const retrieveBlogs = async () => {
 }
 
 module.exports = {
-  initialBlogs, retrieveBlogs,
+  initialUsers, initialBlogs, retrieveBlogs,
 }

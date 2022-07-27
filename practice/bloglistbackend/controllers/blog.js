@@ -1,10 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable object-curly-newline */
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const { SECRET } = require('../utils/config')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { id: 1, name: 1, username: 1 })
@@ -12,19 +9,17 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const { title, author, url, like } = request.body
+  const { body, user } = request
 
-  const decoded = jwt.verify(request.token, SECRET)
-  if (!decoded.id) {
-    return response.status(401).json({ error: 'invalid token passed' })
+  if (!user) {
+    return response.status(401).json({ error: 'missing or invalid token' })
   }
 
-  const user = await User.findById(decoded.id)
   const blog = new Blog({
-    title,
-    author,
-    url,
-    like,
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
     user: user._id,
   })
   const result = await blog.save()
@@ -36,13 +31,43 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  const { user } = request
+  if (!user) {
+    return response.status(401).json({ error: 'missing or invalid token' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(400).json({ error: 'invalid id' })
+  }
+  if (blog.user._id.toString() !== user.id.toString()) {
+    return response.status(403).json({ error: 'blog cannot be deleted by non-owners' })
+  }
+
   await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).json('object deleted')
+  return response.status(204).end()
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  await Blog.findByIdAndUpdate(request.params.id, { likes: request.body.likes }, { runValidators: true, context: 'query' })
-  response.status(204).json('object updated')
+  const { user } = request
+  if (!user) {
+    return response.status(401).json({ error: 'missing or invalid token' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(400).json({ error: 'invalid id' })
+  }
+  if (blog.user._id.toString() !== user.id.toString()) {
+    return response.status(403).json({ error: 'blog cannot be updated by non-owners' })
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { likes: request.body.likes },
+    { new: true, runValidators: true, context: 'query' },
+  )
+  return response.json(updatedBlog)
 })
 
 module.exports = blogsRouter
