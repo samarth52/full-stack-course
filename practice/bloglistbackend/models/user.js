@@ -18,6 +18,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    },
+  ],
 })
 
 UserSchema.set('toJSON', {
@@ -25,6 +31,7 @@ UserSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.passwordHash
+    delete returnedObject.__v
   },
 })
 

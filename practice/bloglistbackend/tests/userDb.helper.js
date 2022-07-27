@@ -7,6 +7,7 @@ const retrieveUsers = async () => {
 
 const initialUsers = [
   {
+    _id: '62e11aa06bf6c1290d7326b9',
     username: 'root',
     name: 'root',
     password: 'alkshd1087aGJsh1bA',

@@ -1,3 +1,16 @@
+GET http://localhost:3001/api/users
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "name": "root",
+  "username": "root",
+  "password": "alkshd1087aGJsh1bA"
+}
+
+###
 GET http://localhost:3001/api/blogs
 
 ###
@@ -5,7 +18,7 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-  "title": "new blog4",
+  "title": "new blog",
   "author": "Samarth Chandna",
   "url": "https://myurl.com",
   "likes": 100

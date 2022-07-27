@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 const mongoose = require('mongoose')
@@ -14,6 +15,7 @@ beforeEach(async () => {
 
   for (const initialUser of helper.initialUsers) {
     await User({
+      _id: initialUser._id,
       name: initialUser.name,
       username: initialUser.username,
       passwordHash: await bcrypt.hash(initialUser.password, 10),
